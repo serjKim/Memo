@@ -32,8 +32,8 @@ npm start
     * Giraffie
     * Authentication:
         - [x] Cookie-based
-    * Authorization [ ]
-    * Database storage [ ]
+    * [ ] Authorization
+    * [ ] Database storage
     * [x] CSRF token
         - prodvied by the api, can be rendered with index.html
           but webpack-dev-server should support this
