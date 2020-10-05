@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="NodeModules.fs" />
+    <Compile Include="AppResult.fs" />
+    <Compile Include="Api.fs" />
+    <Compile Include="Routing.fs" />
+    <Compile Include="Modules/Error.fs" />
+    <Compile Include="Modules/Auth.fs" />
+    <Compile Include="Modules/Memos.fs" />
+    <Compile Include="Modules/Dashboard.fs" />
+    <Compile Include="Modules/Github.fs" />
+    <Compile Include="Modules/Layout.fs" />
+    <Compile Include="App.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fable.Browser.Dom" Version="1.1.0" />
+    <PackageReference Include="Fable.Core" Version="3.1.5" />
+    <PackageReference Include="Fable.Elmish.React" Version="3.0.1" />
+    <PackageReference Include="Fable.MaterialUI" Version="4.1.0" />
+    <PackageReference Include="Fable.MaterialUI.Icons" Version="1.3.0" />
+    <PackageReference Include="Thoth.Json" Version="4.1.0" />
+    <PackageReference Include="Thoth.Fetch" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Memo.Shared\Memo.Shared.fsproj" />
+  </ItemGroup>
+</Project>

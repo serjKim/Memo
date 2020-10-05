@@ -1,0 +1,42 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build:dev": "webpack --mode=development --progress --watch",
+    "build:prod": "webpack -p --progress",
+    "dist": "fable-splitter src/Memo.Client.fsproj -o dist/",
+    "fable-splitter": "fable-splitter"
+  },
+  "dependencies": {
+    "@emotion/core": "^10.0.35",
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "emotion": "^10.0.27",
+    "linaria": "^1.3.3",
+    "notistack": "^1.0.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-router5": "^8.0.1",
+    "router5": "^8.0.1",
+    "router5-plugin-browser": "^8.0.1",
+    "rxjs": "^6.6.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.11.5",
+    "babel-loader": "^8.1.0",
+    "babel-plugin-emotion": "^10.0.33",
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^4.2.2",
+    "fable-compiler": "^2.4.15",
+    "fable-loader": "^2.1.8",
+    "fable-splitter": "^2.2.1",
+    "html-webpack-plugin": "^4.5.0",
+    "mini-css-extract-plugin": "^0.11.0",
+    "sass": "^1.26.10",
+    "sass-loader": "^10.0.2",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
+}
