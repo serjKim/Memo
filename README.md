@@ -29,11 +29,11 @@ npm start
         - Static: Linaria + SCSS
         - Dynamic: Emotion
 * Backend
-    * Giraffie
+    * Giraffe
     * Authentication:
         - [x] Cookie-based
     * [ ] Authorization
-    * [ ] Database storage
+    * [ ] Database
     * [x] CSRF token
         - prodvied by the api, can be rendered with index.html
           but webpack-dev-server should support this
