@@ -24,18 +24,18 @@ npm start
     * Routing: Router5
         - [x] Basic routing
         - [ ] Gruards
-    * Styles:
+    * Styles
         - Material UI (+JSS)
         - Static: Linaria + SCSS
         - Dynamic: Emotion
 * Backend
-    * Giraffie
-    * Authentication:
+    * Giraffe
+    * Authentication
         - [x] Cookie-based
-    * Authorization [ ]
-    * Database storage [ ]
+    * [ ] Authorization
+    * [ ] Database
     * [x] CSRF token
-        - prodvied by the api, can be rendered with index.html
+        - provided by the api, can be rendered with index.html
           but webpack-dev-server should support this
     * Memo
         - [x] Get all
