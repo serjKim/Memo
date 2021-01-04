@@ -7,7 +7,7 @@ module App =
     open NodeModules.Router5
     open NodeModules.Notistack
     open Routing
-    open Modules.Auth
+    open Modules.Auth.Hooks
     open Modules.Layout
     open Modules.Github
     open AppResult.Components

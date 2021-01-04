@@ -3,17 +3,15 @@
 module Memos =
     [<RequireQualifiedAccess>]
     module private MemosApi =
-        open Thoth.Fetch
+        open Memo.Client.Api.Types
+        open Memo.Client.Api.Methods
         open Memo.Core
-        open Memo.Client.AppResult
-        open Memo.Client.Api
 
         let fetchAllMemos () : AppPromise<Memo list> =
-            Fetch.tryGet ("/api/memos", extra = extraDecoders)
-            |> Promise.mapResultError ApiCallFailed
+            Methods.tryGet "/api/memos"
 
     open Fable.React.HookBindings
-    open Memo.Client.AppResult
+    open Memo.Client.AppResult.Types
     open Memo.Core
 
     let useMemoList () : AppResult<Memo list> =

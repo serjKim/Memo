@@ -11,7 +11,7 @@ module Dashboard =
         open AppResult.Components
         open Memo.Core
         open Memos
-        open Auth
+        open Auth.Hooks
         open Memo.Shared.Web.Auth
 
         let private cardClass = createClass (css, "
@@ -60,9 +60,11 @@ module Dashboard =
         let memoList = FunctionComponent.Of(fun () ->
             let loadedMemos = useMemoList ()
             let user = useAppUser ()
+
             AppResult.render loadedMemos (fun memos ->
-                div [ HTMLAttr.ClassName listContainerClass ]
-                    (memos
-                    |> List.map (fun memo -> memoItem {| Memo = memo; User = user |})
-                    |> Seq.ofList)
+                div [ HTMLAttr.ClassName listContainerClass ] [
+                    yield! (memos
+                        |> List.map (fun memo -> memoItem {| Memo = memo; User = user |})
+                        |> Seq.ofList)
+                ]
                 ))

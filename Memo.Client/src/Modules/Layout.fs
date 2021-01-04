@@ -7,7 +7,7 @@ module Layout =
         module Mui = Fable.MaterialUI.Core
         module MuiIcons = Fable.MaterialUI.Icons
         open Fable.React.Props
-        open Auth
+        open Auth.Hooks
         open Memo.Shared.Web.Auth
 
         let toolbarButtons = FunctionComponent.Of(fun (props: {| Dispatch: SignDispatch |}) ->

@@ -1,55 +1,45 @@
-namespace Memo.Client.Modules
+namespace Memo.Client.Modules.Auth
 
-module Auth =
+[<RequireQualifiedAccess>]
+module private AuthApi =
+    open Memo.Shared.Web.Auth
+    open Memo.Client.Api.Types
+    open Memo.Client.Api.Methods
+
+    (* Rx-way implementation:
+    open Fetch.Types
+    let fetchUser () =
+        getJson "/api/auth/user"
+        |> map deserialize<AppUser>
+
+    let login (email: string) (password: string) =
+        postJson "/api/auth/login" {| Email = email; Password = password |} {| ``content-type`` = "application/json; charset=utf-8" |}
+        |> map deserialize<AppUser>
+
+    let logout () =
+        postJson "/api/auth/logout" undefined undefined
+    *)
+
+    let fetchUser () : AppPromise<AppUser> =
+        Methods.tryGet "/api/auth/user"
+
+    let signIn (email: string) (password: string) : AppPromise<AppUser> =
+        Methods.tryPost (url = "/api/auth/signIn", data = {| Email = email; Password = password |})
+
+    let singOut () : AppPromise<unit> =
+        Methods.tryPost (url = "/api/auth/signOut")
+
+module Hooks =
     open Browser
-    open Thoth.Fetch
     open Fable.React.Helpers
     open Fable.React.HookBindings
-    open Memo.Client.AppResult
+    open Memo.Client.AppResult.Types
     open Memo.Shared.Web.Auth
 
     type SignAction =
         | SilentSign
         | SignIn of email:string * password:string
         | SignOut
-
-    type SignState = { User: AppUser }
-
-    [<RequireQualifiedAccess>]
-    module private AuthApi =
-        open Memo.Client.Api
-
-        (* Rx-way implementation:
-        open Fetch.Types
-        let fetchUser () =
-            getJson "/api/auth/user"
-            |> map deserialize<AppUser>
-
-        let login (email: string) (password: string) =
-            postJson "/api/auth/login" {| Email = email; Password = password |} {| ``content-type`` = "application/json; charset=utf-8" |}
-            |> map deserialize<AppUser>
-
-        let logout () =
-            postJson "/api/auth/logout" undefined undefined
-        *)
-
-        let fetchUser () : AppPromise<AppUser> =
-            Fetch.tryGet ("/api/auth/user", extra = extraDecoders)
-            |> Promise.mapResultError ApiCallFailed
-
-        let signIn (email: string) (password: string) : AppPromise<AppUser> =
-            Csrf.withToken (fun headers ->
-                Fetch.tryPost (url = "/api/auth/signIn",
-                               data = {| Email = email; Password = password |},
-                               extra = extraDecoders,
-                               headers = headers)
-                |> Promise.mapResultError ApiCallFailed)
-
-        let singOut () : AppPromise<unit> =
-            Csrf.withToken (fun headers ->
-                Fetch.tryPost (url = "/api/auth/signOut",
-                               headers = headers)
-                |> Promise.mapResultError ApiCallFailed)
 
     type SignDispatch = SignAction -> unit
     type SignHookResult = { Dispatch: SignDispatch; AppUser: AppResult<AppUser> }
