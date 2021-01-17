@@ -49,22 +49,27 @@ module Hooks =
         let inline setUser (user: AppResult<AppUser>) : unit = userState.update user
         (userState.current, setUser)
 
+    let private reloadPage () = window.location.reload ()
+
+    let private signDispatch (setUser: AppResult<AppUser> -> unit)
+                             (reloadPage: unit -> unit)
+                             (action: SignAction) =
+        promise {
+            match action with
+            | SilentSign ->
+                let! user = AuthApi.fetchUser ()
+                setUser user
+            | SignIn (email,pass) ->
+                let! _ = AuthApi.signIn email pass
+                reloadPage ()
+            | SignOut ->
+                let! _ = AuthApi.singOut ()
+                reloadPage ()
+        } |> ignore
+
     let useSign () =
         let user,setUser = useUser Guest
-        let dispatch = Hooks.useMemo((fun () ->
-            fun action ->
-                promise {
-                    match action with
-                    | SilentSign ->
-                        let! user = AuthApi.fetchUser ()
-                        setUser user
-                    | SignIn (email,pass) ->
-                        let! _ = AuthApi.signIn email pass
-                        window.location.reload ()
-                    | SignOut ->
-                        let! _ = AuthApi.singOut ()
-                        window.location.reload ()
-                } |> ignore), [||])
+        let dispatch = Hooks.useMemo((fun () -> signDispatch setUser reloadPage ), [||])
         { Dispatch = dispatch
           AppUser = user }
 
