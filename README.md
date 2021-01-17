@@ -35,7 +35,7 @@ npm start
     * [ ] Authorization
     * [ ] Database
     * [x] CSRF token
-        - provided by the api, can be rendered with index.html
+        - provided by a cookie, can be rendered with index.html
           but webpack-dev-server should support this
     * Memo
         - [x] Get all

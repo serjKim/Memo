@@ -54,7 +54,6 @@ module Program =
     let webApp =
         choose [
             subRoute "/api" ^choose [
-                GET >=> route "/csrfToken" >=> getCsrfToken
                 GET >=> route "/ping" >=> json "pong"
                 GET >=> route "/test" >=> authorized >=> json "test 123"
                 GET >=> route "/admin-test" >=> authorized >=> onlyAdmin >=> json "admin-test 123"
@@ -67,10 +66,10 @@ module Program =
 
                 subRoute "/memos" ^choose [
                     GET >=> getAllMemos
-                    POST >=> (withDep<ILogger<PostMemoRequest >> postMemo)
+                    POST >=> withDep<ILogger<PostMemoRequest>> postMemo
                 ]
             ]
-            routex "/(.*)" >=> htmlFile ClientBuild.indexHtmlPath
+            routex "/(.*)" >=> csrfCookie >=> htmlFile ClientBuild.indexHtmlPath
         ]
 
     type Startup() =
@@ -112,7 +111,7 @@ module Program =
             
             let staticFilesOptions = StaticFileOptions(FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, ClientBuild.rootPath)))
             app.UseStaticFiles (staticFilesOptions) |> ignore
-            
+
             app.UseAuthentication() |> ignore
             app.UseGiraffe webApp
             

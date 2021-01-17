@@ -31,13 +31,14 @@ module CsrfHandlers =
     open Microsoft.AspNetCore.Antiforgery
     open RouteHandlers
     open Memo.Shared.Web.Csrf
-    
-    let getCsrfToken =
+
+    let csrfCookie =
         fun next (ctx: HttpContext) ->
             let csrf = ctx.GetService<IAntiforgery> ()
             let store = csrf.GetAndStoreTokens ctx
-            let csrfToken = CsrfToken.Token store.RequestToken
-            ok csrfToken next ctx
+            let cookieOptions = CookieOptions(SameSite = SameSiteMode.Lax)
+            ctx.Response.Cookies.Append (apiCsrfCookieName, store.RequestToken, cookieOptions)
+            next ctx
 
 module AuthHandlers =
     open System.Security.Claims
@@ -45,7 +46,7 @@ module AuthHandlers =
     open Microsoft.AspNetCore.Authentication
     open Microsoft.AspNetCore.Http
     open Microsoft.Extensions.Logging
-    open FSharp.Control.Tasks.V2
+    open FSharp.Control.Tasks.V2.ContextInsensitive
     open Giraffe
     open Memo.Core
     open Memo.Shared.Web.Auth
@@ -112,7 +113,7 @@ module MemoHandlers =
     open System
     open Microsoft.AspNetCore.Http
     open Giraffe
-    open FSharp.Control.Tasks.V2
+    open FSharp.Control.Tasks.V2.ContextInsensitive
     open Microsoft.Extensions.Logging
     open Memo.Core
     open RouteHandlers

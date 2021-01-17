@@ -23,34 +23,29 @@ module Types =
 
 [<RequireQualifiedAccess>]
 module Csrf =
-    open Fable.Core
+    open System.Text.RegularExpressions
     open Fetch.Types
     open Memo.Shared.Web.Csrf
-    open Thoth.Fetch
 
-    type CSRFTokenStore() =
-        let mutable currentToken = Option<JS.Promise<CsrfToken>>.None
-        member _.CurrentToken() =
-            if currentToken.IsNone then
-                currentToken <- Some <| promise {
-                    match! Fetch.tryGet "api/csrfToken" with
-                    | Ok tkn ->
-                        return tkn
-                    | Error _ ->
-                        JS.console.log (sprintf "Couldn't load a CSRF token")
-                        return CsrfToken.Token ""
-                }
-            currentToken
+    let extractToken (cookie: string) =
+        let r = Regex(apiCsrfCookieName + "=(.+)")
+        let cookiesByName = cookie.Split ([| ';' |])
+        let result = Array.choose (fun x ->
+                let m = r.Match x
+                if m.Success then
+                    let g = m.Groups.[1]
+                    Some g.Value
+                else
+                    None) cookiesByName
+        result.[0]
 
-    let tokenStore = CSRFTokenStore()
+    let appendToken (Token token)
+                     (headers: HttpRequestHeaders list) : HttpRequestHeaders list =
+        HttpRequestHeaders.Custom ("RequestVerificationToken", token) :: headers |> List.distinct
 
-    let withToken (f: HttpRequestHeaders list -> JS.Promise<'a>) : JS.Promise<'a> =
-        promise {
-            let! token = (tokenStore.CurrentToken() |> Option.get)
-            let strToken = stringifyToken token
-            let headers = [HttpRequestHeaders.Custom ("RequestVerificationToken", strToken)]
-            return! f headers
-        }
+    let csrfToken = Token (extractToken Browser.Dom.document.cookie)
+
+    let appendCurrentToken : HttpRequestHeaders list -> HttpRequestHeaders list = appendToken csrfToken
 
 module Methods =
     open Fable.Core
@@ -70,13 +65,12 @@ module Methods =
             |> Promise.mapResultError ApiCallFailed
 
         static member inline tryPost<'T> (url: string, ?data: obj, ?headers: HttpRequestHeaders list) : AppPromise<'T> =
-            Csrf.withToken (fun headers' ->
-                Fetch.tryPost (url = url,
-                               data = (match data with
-                                      | Some d -> d
-                                      | None -> JS.undefined),
-                               extra = extraDecoders,
-                               headers = match headers with
-                                         | Some h -> headers' @ h |> List.distinct
-                                         | None -> headers')
-                |> Promise.mapResultError ApiCallFailed)
+            Fetch.tryPost (url = url,
+                           data = (match data with
+                                  | Some d -> d
+                                  | None -> JS.undefined),
+                           extra = extraDecoders,
+                           headers = match headers with
+                                     | Some hdrs -> Csrf.appendCurrentToken hdrs
+                                     | None -> Csrf.appendCurrentToken [])
+            |> Promise.mapResultError ApiCallFailed
